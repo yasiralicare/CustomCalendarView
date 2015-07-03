@@ -1,201 +1,56 @@
 package com.yasirali.customcalendarview;
 
-import android.graphics.Color;
-import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 
-import com.yasirali.customcalendarview.adapter.CalendarDayViewAdapter;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.Locale;
+import com.yasirali.customcalendarview.adapter.ViewPagerAdapter;
+import com.yasirali.customcalendarview.slidingtab.SlidingTabLayout;
 
 
 public class MainActivity extends ActionBarActivity {
 
-    public GregorianCalendar month, itemmonth;// calendar instances.
 
-    public CalendarDayViewAdapter adapter;// adapter instance
-    public Handler handler;// for grabbing some event values for showing the dot
-    // marker.
-    public ArrayList<String> items; // container to store calendar items which
-    // needs showing the event marker
-    ArrayList<String> event;
-    LinearLayout rLayout;
-    ArrayList<String> date;
-    ArrayList<String> desc;
+    Toolbar toolbar;
+    ViewPager pager;
+    ViewPagerAdapter viewPagerAdapter;
+    SlidingTabLayout tabs;
+    CharSequence Titles[]={"List","Day", "Month"};
+    int Numboftabs =3;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Locale.setDefault(Locale.US);
 
-        rLayout = (LinearLayout) findViewById(R.id.text);
-        month = (GregorianCalendar) GregorianCalendar.getInstance();
-        itemmonth = (GregorianCalendar) month.clone();
+        // Creating The Toolbar and setting it as the Toolbar for the activity
 
-        items = new ArrayList<String>();
+        toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setSupportActionBar(toolbar);
 
-        adapter = new CalendarDayViewAdapter(this, month);
+        // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
+        viewPagerAdapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
 
-        GridView gridview = (GridView) findViewById(R.id.gridview);
-        gridview.setAdapter(adapter);
+        // Assigning ViewPager View and setting the adapter
+        pager = (ViewPager) findViewById(R.id.pager);
+        pager.setAdapter(viewPagerAdapter);
 
-        handler = new Handler();
-        handler.post(calendarUpdater);
+        // Assigning the Sliding Tab Layout View
+        tabs = (SlidingTabLayout) findViewById(R.id.tabs);
+        tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
 
-        TextView title = (TextView) findViewById(R.id.title);
-        title.setText(android.text.format.DateFormat.format("MMMM yyyy", month));
-
-        RelativeLayout previous = (RelativeLayout) findViewById(R.id.previous);
-
-        previous.setOnClickListener(new View.OnClickListener() {
-
+        // Setting Custom Color for the Scroll bar indicator of the Tab View
+        tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
-            public void onClick(View v) {
-                setPreviousMonth();
-                refreshCalendar();
+            public int getIndicatorColor(int position) {
+                return getResources().getColor(R.color.tabsScrollColor);
             }
         });
 
-        RelativeLayout next = (RelativeLayout) findViewById(R.id.next);
-        next.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                setNextMonth();
-                refreshCalendar();
-
-            }
-        });
-
-        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-                // removing the previous view if added
-                if (((LinearLayout) rLayout).getChildCount() > 0) {
-                    ((LinearLayout) rLayout).removeAllViews();
-                }
-                desc = new ArrayList<String>();
-                date = new ArrayList<String>();
-                ((CalendarDayViewAdapter) parent.getAdapter()).setSelected(v);
-                String selectedGridDate = CalendarDayViewAdapter.dayString
-                        .get(position);
-                String[] separatedTime = selectedGridDate.split("-");
-                String gridvalueString = separatedTime[2].replaceFirst("^0*",
-                        "");// taking last part of date. ie; 2 from 2012-12-02.
-                int gridvalue = Integer.parseInt(gridvalueString);
-                // navigate to next or previous month on clicking offdays.
-                if ((gridvalue > 10) && (position < 8)) {
-                    setPreviousMonth();
-                    refreshCalendar();
-                } else if ((gridvalue < 7) && (position > 28)) {
-                    setNextMonth();
-                    refreshCalendar();
-                }
-                ((CalendarDayViewAdapter) parent.getAdapter()).setSelected(v);
-
-                for (int i = 0; i < Utility.startDates.size(); i++) {
-                    if (Utility.startDates.get(i).equals(selectedGridDate)) {
-                        desc.add(Utility.nameOfEvent.get(i));
-                    }
-                }
-
-                if (desc.size() > 0) {
-                    for (int i = 0; i < desc.size(); i++) {
-                        TextView rowTextView = new TextView(MainActivity.this);
-
-                        // set some properties of rowTextView or something
-                        rowTextView.setText("Event:" + desc.get(i));
-                        rowTextView.setTextColor(Color.BLACK);
-
-                        // add the textview to the linearlayout
-                        rLayout.addView(rowTextView);
-
-                    }
-
-                }
-
-                desc = null;
-
-            }
-
-        });
+        // Setting the ViewPager For the SlidingTabsLayout
+        tabs.setViewPager(pager);
     }
 
-    protected void setNextMonth() {
-        if (month.get(GregorianCalendar.MONTH) == month
-                .getActualMaximum(GregorianCalendar.MONTH)) {
-            month.set((month.get(GregorianCalendar.YEAR) + 1),
-                    month.getActualMinimum(GregorianCalendar.MONTH), 1);
-        } else {
-            month.set(GregorianCalendar.MONTH,
-                    month.get(GregorianCalendar.MONTH) + 1);
-        }
-
-    }
-
-    protected void setPreviousMonth() {
-        if (month.get(GregorianCalendar.MONTH) == month
-                .getActualMinimum(GregorianCalendar.MONTH)) {
-            month.set((month.get(GregorianCalendar.YEAR) - 1),
-                    month.getActualMaximum(GregorianCalendar.MONTH), 1);
-        } else {
-            month.set(GregorianCalendar.MONTH,
-                    month.get(GregorianCalendar.MONTH) - 1);
-        }
-
-    }
-
-    protected void showToast(String string) {
-        Toast.makeText(this, string, Toast.LENGTH_SHORT).show();
-
-    }
-
-    public void refreshCalendar() {
-        TextView title = (TextView) findViewById(R.id.title);
-
-        adapter.refreshDays();
-        adapter.notifyDataSetChanged();
-        handler.post(calendarUpdater); // generate some calendar items
-
-        title.setText(android.text.format.DateFormat.format("MMMM yyyy", month));
-    }
-
-    public Runnable calendarUpdater = new Runnable() {
-
-        @Override
-        public void run() {
-            items.clear();
-
-            // Print dates of the current week
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-            String itemvalue;
-            event = Utility.readCalendarEvent(MainActivity.this);
-            Log.d("=====Event====", event.toString());
-            Log.d("=====Date ARRAY====", Utility.startDates.toString());
-
-            for (int i = 0; i < Utility.startDates.size(); i++) {
-                itemvalue = df.format(itemmonth.getTime());
-                itemmonth.add(GregorianCalendar.DATE, 1);
-                items.add(Utility.startDates.get(i).toString());
-            }
-            adapter.setItems(items);
-            adapter.notifyDataSetChanged();
-        }
-    };
 }
