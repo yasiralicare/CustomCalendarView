@@ -17,6 +17,7 @@
 package com.yasirali.customcalendarview.slidingtab;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.support.v4.view.PagerAdapter;
@@ -180,6 +181,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
         int padding = (int) (TAB_VIEW_PADDING_DIPS * getResources().getDisplayMetrics().density);
         textView.setPadding(padding, padding, padding, padding);
 
+        textView.setTextColor(Color.WHITE);
         return textView;
     }
 
