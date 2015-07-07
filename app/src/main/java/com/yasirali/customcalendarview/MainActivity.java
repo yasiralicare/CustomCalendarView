@@ -2,19 +2,19 @@ package com.yasirali.customcalendarview;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.yasirali.customcalendarview.adapter.ViewPagerAdapter;
 import com.yasirali.customcalendarview.slidingtab.SlidingTabLayout;
+import com.yasirali.customcalendarview.ui.CustomViewPager;
 
 
 public class MainActivity extends ActionBarActivity {
 
 
     Toolbar toolbar;
-    ViewPager pager;
+    CustomViewPager pager;
     ViewPagerAdapter viewPagerAdapter;
     SlidingTabLayout tabs;
     CharSequence Titles[]={"List","Day", "Month"};
@@ -36,8 +36,9 @@ public class MainActivity extends ActionBarActivity {
         viewPagerAdapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
 
         // Assigning ViewPager View and setting the adapter
-        pager = (ViewPager) findViewById(R.id.pager);
+        pager = (CustomViewPager) findViewById(R.id.pager);
         pager.setAdapter(viewPagerAdapter);
+        pager.setSwipeable(false);
 
         // Assigning the Sliding Tab Layout View
         tabs = (SlidingTabLayout) findViewById(R.id.tabs);
