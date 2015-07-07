@@ -1,10 +1,11 @@
 package com.yasirali.customcalendarview.fragment;
 
+import android.content.res.AssetManager;
 import android.graphics.Color;
-import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,14 +17,24 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.yasirali.customcalendarview.R;
 import com.yasirali.customcalendarview.Utility;
 import com.yasirali.customcalendarview.adapter.CalendarDayViewAdapter;
+import com.yasirali.customcalendarview.model.Event;
 
-import java.text.DateFormat;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.lang.reflect.Type;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -115,11 +126,20 @@ public class MonthViewFragment extends Fragment{
                 }
                 ((CalendarDayViewAdapter) parent.getAdapter()).setSelected(v);
 
-                for (int i = 0; i < Utility.startDates.size(); i++) {
+                List<Event> events = getEvents();
+
+                for(Event ev : events){
+
+                    if(ev.getStartDate().split(" ")[0].equals(selectedGridDate)){
+                        desc.add(ev.getText());
+                    }
+                }
+
+                /*for (int i = 0; i < Utility.startDates.size(); i++) {
                     if (Utility.startDates.get(i).equals(selectedGridDate)) {
                         desc.add(Utility.nameOfEvent.get(i));
                     }
-                }
+                }*/
 
                 if (desc.size() > 0) {
                     for (int i = 0; i < desc.size(); i++) {
@@ -184,24 +204,76 @@ public class MonthViewFragment extends Fragment{
         title.setText(android.text.format.DateFormat.format("MMMM yyyy", month));
     }
 
+
+    private List<Event> getEvents(){
+        AssetManager assetManager = getActivity().getAssets();
+
+        List<Event> events = new ArrayList<>();
+
+        try {
+            InputStream ims = assetManager.open("cal.json");
+
+            Gson gson = new Gson();
+            Reader reader = new InputStreamReader(ims);
+
+            Type listType = new TypeToken<List<Event>>(){}.getType();
+
+            events = gson.fromJson(reader, listType);
+
+            for(Event e : events){
+                Log.d("Event Title:", e.getText());
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return events;
+    }
+
     public Runnable calendarUpdater = new Runnable() {
 
         @Override
         public void run() {
             items.clear();
 
+
+            List<Event> tempEvents = getEvents();
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.US);
+
+
+
+            for(Event ev : tempEvents){
+                try {
+
+                    itemmonth.add(GregorianCalendar.DATE, 1);
+
+                    Date startDate = dateFormat.parse(ev.getStartDate());
+
+                    items.add(Utility.getDate(startDate.getTime()));
+
+
+                } catch (ParseException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+
+
             // Print dates of the current week
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+            /*DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
             String itemvalue;
             event = Utility.readCalendarEvent(getActivity());
             Log.d("=====Event====", event.toString());
-            Log.d("=====Date ARRAY====", Utility.startDates.toString());
+            Log.d("=====Date ARRAY====", Utility.startDates.toString());*/
 
-            for (int i = 0; i < Utility.startDates.size(); i++) {
+            /*for (int i = 0; i < Utility.startDates.size(); i++) {
                 itemvalue = df.format(itemmonth.getTime());
                 itemmonth.add(GregorianCalendar.DATE, 1);
                 items.add(Utility.startDates.get(i).toString());
-            }
+            }*/
             adapter.setItems(items);
             adapter.notifyDataSetChanged();
         }

@@ -1,5 +1,6 @@
 package com.yasirali.customcalendarview.fragment;
 
+import android.content.res.AssetManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,13 +11,23 @@ import android.view.ViewGroup;
 
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.yasirali.customcalendarview.R;
 import com.yasirali.customcalendarview.Utility;
+import com.yasirali.customcalendarview.model.Event;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.lang.reflect.Type;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
@@ -48,6 +59,7 @@ public class DayViewFragment extends Fragment {
         // month every time the month changes on the week view.
         mWeekView.setMonthChangeListener(mMonthChangeListener);
 
+
         // Set long press listener for events.
         //mWeekView.setEventLongPressListener(mEventLongPressListener);
 
@@ -63,7 +75,37 @@ public class DayViewFragment extends Fragment {
             //List<WeekViewEvent> events = Utility.getCalendarEvents(getActivity(), newYear, newMonth);
             List<WeekViewEvent> events = new ArrayList<>();
 
-            Calendar startTime = Calendar.getInstance();
+            List<Event> tempEvents = getEvents();
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.US);
+
+
+
+            for(Event ev : tempEvents){
+                try {
+                    Date startDate = dateFormat.parse(ev.getStartDate());
+                    Date endDate = dateFormat.parse(ev.getEndDate());
+
+
+                    Calendar startTime = Calendar.getInstance();
+                    startTime.setTime(startDate);
+
+                    Calendar endTime = Calendar.getInstance();
+                    endTime.setTime(endDate);
+
+                    WeekViewEvent event = new WeekViewEvent(1, getEventTitle(startTime), startTime, endTime);
+                    event.setColor(getResources().getColor(R.color.event_color_02));
+                    events.add(event);
+
+
+                } catch (ParseException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+
+
+            /*Calendar startTime = Calendar.getInstance();
             startTime.set(Calendar.HOUR_OF_DAY, 3);
             startTime.set(Calendar.MINUTE, 0);
             startTime.set(Calendar.MONTH, newMonth-1);
@@ -161,11 +203,39 @@ public class DayViewFragment extends Fragment {
             endTime.add(Calendar.HOUR_OF_DAY, 3);
             event = new WeekViewEvent(5, getEventTitle(startTime), startTime, endTime);
             event.setColor(getResources().getColor(R.color.event_color_02));
-            events.add(event);
+            events.add(event);*/
 
             return events;
         }
     };
+
+
+    private List<Event> getEvents(){
+        AssetManager assetManager = getActivity().getAssets();
+
+        List<Event> events = new ArrayList<>();
+
+        try {
+            InputStream ims = assetManager.open("cal.json");
+
+            Gson gson = new Gson();
+            Reader reader = new InputStreamReader(ims);
+
+            Type listType = new TypeToken<List<Event>>(){}.getType();
+
+            events = gson.fromJson(reader, listType);
+
+            for(Event e : events){
+                Log.d("Event Title:", e.getText());
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return events;
+    }
 
     private String getEventTitle(Calendar time) {
         return String.format("Event of %02d:%02d %s/%d", time.get(Calendar.HOUR_OF_DAY), time.get(Calendar.MINUTE), time.get(Calendar.MONTH)+1, time.get(Calendar.DAY_OF_MONTH));
