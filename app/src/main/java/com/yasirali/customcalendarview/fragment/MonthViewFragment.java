@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yasirali.customcalendarview.R;
 import com.yasirali.customcalendarview.Utility;
-import com.yasirali.customcalendarview.adapter.CalendarDayViewAdapter;
+import com.yasirali.customcalendarview.adapter.MonthViewAdapter;
 import com.yasirali.customcalendarview.model.Event;
 
 import java.io.IOException;
@@ -44,7 +44,7 @@ public class MonthViewFragment extends Fragment{
 
     public GregorianCalendar month, itemmonth;// calendar instances.
 
-    public CalendarDayViewAdapter adapter;// adapter instance
+    public MonthViewAdapter adapter;// adapter instance
     public Handler handler;// for grabbing some event values for showing the dot
     // marker.
     public ArrayList<String> items; // container to store calendar items which
@@ -53,6 +53,7 @@ public class MonthViewFragment extends Fragment{
     LinearLayout rLayout;
     ArrayList<String> date;
     ArrayList<String> desc;
+    private List<Event> mEvents;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -67,7 +68,7 @@ public class MonthViewFragment extends Fragment{
 
         items = new ArrayList<String>();
 
-        adapter = new CalendarDayViewAdapter(getActivity(), month);
+        adapter = new MonthViewAdapter(getActivity(), month);
 
         GridView gridview = (GridView) view.findViewById(R.id.gridview);
         gridview.setAdapter(adapter);
@@ -109,8 +110,8 @@ public class MonthViewFragment extends Fragment{
                 }
                 desc = new ArrayList<String>();
                 date = new ArrayList<String>();
-                ((CalendarDayViewAdapter) parent.getAdapter()).setSelected(v);
-                String selectedGridDate = CalendarDayViewAdapter.dayString
+                ((MonthViewAdapter) parent.getAdapter()).setSelected(v);
+                String selectedGridDate = MonthViewAdapter.dayString
                         .get(position);
                 String[] separatedTime = selectedGridDate.split("-");
                 String gridvalueString = separatedTime[2].replaceFirst("^0*",
@@ -124,7 +125,7 @@ public class MonthViewFragment extends Fragment{
                     setNextMonth();
                     refreshCalendar(view);
                 }
-                ((CalendarDayViewAdapter) parent.getAdapter()).setSelected(v);
+                ((MonthViewAdapter) parent.getAdapter()).setSelected(v);
 
                 List<Event> events = getEvents();
 
@@ -232,6 +233,9 @@ public class MonthViewFragment extends Fragment{
         return events;
     }
 
+
+
+
     public Runnable calendarUpdater = new Runnable() {
 
         @Override
@@ -239,13 +243,13 @@ public class MonthViewFragment extends Fragment{
             items.clear();
 
 
-            List<Event> tempEvents = getEvents();
+            mEvents = getEvents();
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.US);
 
 
 
-            for(Event ev : tempEvents){
+            for(Event ev : mEvents){
                 try {
 
                     itemmonth.add(GregorianCalendar.DATE, 1);

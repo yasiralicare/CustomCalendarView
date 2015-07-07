@@ -1,16 +1,29 @@
 package com.yasirali.customcalendarview.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.yasirali.customcalendarview.R;
+import com.yasirali.customcalendarview.model.Event;
+import com.yasirali.customcalendarview.ui.EventTitleTextView;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,7 +34,7 @@ import java.util.Locale;
 /**
  * Created by yasirali on 7/3/15.
  */
-public class CalendarDayViewAdapter extends BaseAdapter {
+public class MonthViewAdapter extends BaseAdapter {
 
     private Context mContext;
 
@@ -45,10 +58,11 @@ public class CalendarDayViewAdapter extends BaseAdapter {
     private ArrayList<String> items;
     public static List<String> dayString;
     private View previousView;
+    private List<Event> mEvents;
 
 
-    public CalendarDayViewAdapter(Context c, GregorianCalendar monthCalendar) {
-        CalendarDayViewAdapter.dayString = new ArrayList<String>();
+    public MonthViewAdapter(Context c, GregorianCalendar monthCalendar) {
+        MonthViewAdapter.dayString = new ArrayList<String>();
         Locale.setDefault(Locale.US);
         month = monthCalendar;
         selectedDate = (GregorianCalendar) monthCalendar.clone();
@@ -57,6 +71,7 @@ public class CalendarDayViewAdapter extends BaseAdapter {
         this.items = new ArrayList<String>();
         df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         curentDateString = df.format(selectedDate.getTime());
+        mEvents = getEvents();
         refreshDays();
     }
 
@@ -131,14 +146,64 @@ public class CalendarDayViewAdapter extends BaseAdapter {
             monthStr = "0" + monthStr;
         }
 
-        // show icon if date is not empty and it exists in the items array
-        ImageView iw = (ImageView) v.findViewById(R.id.date_icon);
+        LinearLayout eventTextContainer = (LinearLayout) v.findViewById(R.id.eventTextContainer);
+
+        /*EventTitleTextView tv = new EventTitleTextView(mContext);
+        tv.setText("123123123");
+        tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        eventTextContainer.addView(tv);*/
+
+        // show event text views if there is any event
         if (date.length() > 0 && items != null && items.contains(date)) {
-            iw.setVisibility(View.VISIBLE);
-        } else {
-            iw.setVisibility(View.INVISIBLE);
+            List<Event> events = getEventsByDate(date);
+            for(Event ev : events){
+                EventTitleTextView tv = new EventTitleTextView(mContext);
+                tv.setText(ev.getText());
+                tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                eventTextContainer.addView(tv);
+            }
         }
         return v;
+    }
+
+    private List<Event> getEvents(){
+        AssetManager assetManager = mContext.getAssets();
+
+        List<Event> events = new ArrayList<>();
+
+        try {
+            InputStream ims = assetManager.open("cal.json");
+
+            Gson gson = new Gson();
+            Reader reader = new InputStreamReader(ims);
+
+            Type listType = new TypeToken<List<Event>>(){}.getType();
+
+            events = gson.fromJson(reader, listType);
+
+            for(Event e : events){
+                Log.d("Event Title:", e.getText());
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return events;
+    }
+
+    private List<Event> getEventsByDate(String date){
+
+        List<Event> events = new ArrayList<>();
+
+            for(Event e : mEvents){
+                if(e.getStartDate().split(" ")[0].equals(date)){
+                    events.add(e);
+                }
+            }
+
+        return events;
     }
 
     public View setSelected(View view) {
