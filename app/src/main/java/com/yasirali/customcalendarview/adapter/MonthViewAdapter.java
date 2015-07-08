@@ -225,9 +225,9 @@ public class MonthViewAdapter extends BaseAdapter {
 
             events = gson.fromJson(reader, listType);
 
-            for(Event e : events){
+            /*for(Event e : events){
                 Log.d("Event Title:", e.getText());
-            }
+            }*/
 
 
         } catch (IOException e) {
