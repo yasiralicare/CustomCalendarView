@@ -20,43 +20,42 @@
     </TextView>
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/eventTextContainer"
         android:layout_marginLeft="2dp"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_below="@+id/date"
         android:orientation="vertical"
-        android:background="#efeedd"
         android:weightSum="4">
 
         <com.yasirali.customcalendarview.ui.EventTitleTextView
-            android:layout_weight="1"
+            android:id="@+id/eventTitle1"
+            android:layout_weight="1.1"
             android:layout_height="0dp"
             android:layout_width="match_parent"
-            android:text="12132313"
-            android:gravity="center|left"
+            android:text="12132313asdasdadasdasd"
             android:layout_marginTop="1dp"
             android:layout_marginBottom="1dp" />
 
         <com.yasirali.customcalendarview.ui.EventTitleTextView
-            android:layout_weight="1"
+            android:id="@+id/eventTitle2"
+            android:layout_weight="1.1"
             android:layout_height="0dp"
             android:layout_width="match_parent"
             android:text="12132313"
-            android:gravity="center|left"
-            android:layout_marginBottom="1dp"/>
+            android:layout_marginBottom="1dp" />
 
         <com.yasirali.customcalendarview.ui.EventTitleTextView
-            android:layout_weight="1"
+            android:id="@+id/eventTitle3"
+            android:layout_weight="1.1"
             android:layout_height="0dp"
             android:layout_width="match_parent"
-            android:text="12132313"
-            android:gravity="center|left"
+            android:text="12132313asdasdasdasdasd"
             android:layout_marginBottom="1dp" />
 
         <ImageView
-            android:layout_weight="1"
+            android:id="@+id/eventDots"
+            android:layout_weight="0.7"
             android:layout_height="0dp"
             android:layout_width="match_parent"
             android:src="@drawable/dot"

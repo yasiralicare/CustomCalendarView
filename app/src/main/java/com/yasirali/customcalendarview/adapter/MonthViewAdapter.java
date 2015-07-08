@@ -148,6 +148,18 @@ public class MonthViewAdapter extends BaseAdapter {
 
         LinearLayout eventTextContainer = (LinearLayout) v.findViewById(R.id.eventTextContainer);
 
+        eventTextContainer.findViewById(R.id.eventDots).setVisibility(View.GONE);
+        TextView tv1 = (TextView) eventTextContainer.findViewById(R.id.eventTitle1);
+        TextView tv2= (TextView) eventTextContainer.findViewById(R.id.eventTitle2);
+        TextView tv3 = (TextView) eventTextContainer.findViewById(R.id.eventTitle3);
+        tv1.setText("");
+        tv2.setText("");
+        tv3.setText("");
+
+        tv1.setVisibility(View.GONE);
+        tv2.setVisibility(View.GONE);
+        tv3.setVisibility(View.GONE);
+
         /*EventTitleTextView tv = new EventTitleTextView(mContext);
         tv.setText("123123123");
         tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -156,12 +168,44 @@ public class MonthViewAdapter extends BaseAdapter {
         // show event text views if there is any event
         if (date.length() > 0 && items != null && items.contains(date)) {
             List<Event> events = getEventsByDate(date);
-            for(Event ev : events){
+            if(events.size() <= 0){
+                eventTextContainer.setVisibility(View.GONE);
+            } else{
+                eventTextContainer.setVisibility(View.VISIBLE);
+
+                int size = events.size() >= 4 ? 3 : events.size();
+
+                switch (size){
+                    case 1:
+                        tv1.setText(events.get(0).getText());
+                        tv1.setVisibility(View.VISIBLE);
+                        break;
+                    case 2:
+                        tv1.setText(events.get(0).getText());
+                        tv2.setText(events.get(1).getText());
+                        tv1.setVisibility(View.VISIBLE);
+                        tv2.setVisibility(View.VISIBLE);
+                        break;
+                    case 3:
+                        tv1.setText(events.get(0).getText());
+                        tv2.setText(events.get(1).getText());
+                        tv3.setText(events.get(2).getText());
+                        tv1.setVisibility(View.VISIBLE);
+                        tv2.setVisibility(View.VISIBLE);
+                        tv3.setVisibility(View.VISIBLE);
+                        break;
+                }
+
+                if(events.size() >= 4){
+                    eventTextContainer.findViewById(R.id.eventDots).setVisibility(View.VISIBLE);
+                }
+            }
+            /*for(Event ev : events){
                 EventTitleTextView tv = new EventTitleTextView(mContext);
                 tv.setText(ev.getText());
                 tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                 eventTextContainer.addView(tv);
-            }
+            }*/
         }
         return v;
     }

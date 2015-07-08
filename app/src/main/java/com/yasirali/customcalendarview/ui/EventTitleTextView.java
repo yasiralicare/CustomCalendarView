@@ -2,8 +2,10 @@ package com.yasirali.customcalendarview.ui;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -13,21 +15,17 @@ import android.widget.TextView;
  */
 public class EventTitleTextView extends TextView{
 
-    private float density;
 
     public EventTitleTextView(Context context) {
         super(context);
-        density = context.getResources().getDisplayMetrics().density;
     }
 
     public EventTitleTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        float density = context.getResources().getDisplayMetrics().density;
     }
 
     public EventTitleTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        float density = context.getResources().getDisplayMetrics().density;
     }
 
     @Override
@@ -36,8 +34,12 @@ public class EventTitleTextView extends TextView{
     }
 
     private void decorateText(){
-        this.setTextSize(TypedValue.COMPLEX_UNIT_SP, 9);
-        this.setBackgroundColor(Color.CYAN);
-        this.setTextColor(Color.BLACK);
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 9);
+        setBackgroundColor(Color.CYAN);
+        setTextColor(Color.BLACK);
+        setGravity(Gravity.CENTER | Gravity.LEFT);
+        setLines(1);
+        setEms(3);
+        setEllipsize(TextUtils.TruncateAt.END);
     }
 }
