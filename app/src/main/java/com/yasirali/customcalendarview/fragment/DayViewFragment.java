@@ -1,11 +1,15 @@
 package com.yasirali.customcalendarview.fragment;
 
 import android.content.res.AssetManager;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -50,6 +54,8 @@ public class DayViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v =inflater.inflate(R.layout.tab_day_view,container,false);
 
+        setHasOptionsMenu(true);
+
         // Get a reference for the week view in the layout.
         mWeekView = (WeekView) v.findViewById(R.id.weekView);
 
@@ -76,7 +82,6 @@ public class DayViewFragment extends Fragment {
         // month every time the month changes on the week view.
         mWeekView.setMonthChangeListener(mMonthChangeListener);
 
-        mWeekView.goToToday();
 
 
 
@@ -88,6 +93,22 @@ public class DayViewFragment extends Fragment {
         return v;
     }
 
+    @Override
+    public void onCreateOptionsMenu(
+            Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.dayview_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_goto_today:
+                mWeekView.goToToday();
+                break;
+        }
+        return true;
+    }
+
     WeekView.MonthChangeListener mMonthChangeListener = new WeekView.MonthChangeListener() {
         @Override
         public List<WeekViewEvent> onMonthChange(int newYear, int newMonth) {
@@ -95,9 +116,8 @@ public class DayViewFragment extends Fragment {
 
             // Populate the week view with some events.
             //List<WeekViewEvent> events = Utility.getCalendarEvents(getActivity(), newYear, newMonth);
-            List<WeekViewEvent> events = new ArrayList<>();
 
-            generateEventsFromJson(newYear, newMonth, events);
+            List<WeekViewEvent> events = generateEventsFromJson(newYear, newMonth);
 
             //generateDummyEvents(newYear, newMonth, events);
 
@@ -105,7 +125,10 @@ public class DayViewFragment extends Fragment {
         }
     };
 
-    private void generateEventsFromJson(int newYear, int newMonth, List<WeekViewEvent> events) {
+    private List<WeekViewEvent> generateEventsFromJson(int newYear, int newMonth) {
+
+        List<WeekViewEvent> events = new ArrayList<>();
+
         List<Event> tempEvents = getEvents(newYear, newMonth);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.US);
@@ -123,7 +146,7 @@ public class DayViewFragment extends Fragment {
                 Calendar endTime = Calendar.getInstance();
                 endTime.setTime(endDate);
 
-                WeekViewEvent event = new WeekViewEvent(1, ev.getText(), startTime, endTime);
+                WeekViewEvent event = new WeekViewEvent(1, ev.getText().trim(), startTime, endTime);
                 event.setColor(getResources().getColor(R.color.event_color_02));
                 events.add(event);
 
@@ -133,6 +156,8 @@ public class DayViewFragment extends Fragment {
                 e.printStackTrace();
             }
         }
+
+        return events;
     }
 
     private void generateDummyEvents(int newYear, int newMonth, List<WeekViewEvent> events) {
@@ -245,15 +270,21 @@ public class DayViewFragment extends Fragment {
 
             Log.d("---", "-------------------***---------------------");
 
+        final Calendar c = Calendar.getInstance();
+
             for(Event e : events){
 
                 try {
 
                     Date startDate = dateFormat.parse(e.getStartDate());
-                    //if(startDate.getYear() == year && startDate.getMonth() == month){
+                    c.setTime(startDate);
+
+                    int tmpYear = c.get(Calendar.YEAR);
+                    int tmpMonth = c.get(Calendar.MONTH);
+                    if(tmpYear == year &&  tmpMonth == month){
                         tempEvents.add(e);
                         Log.d("Event", e.getText() + " Start:" + e.getStartDate() + " End:" + e.getEndDate());
-                    //}
+                    }
                     /*Calendar cal = Calendar.getInstance(Locale.US);
                     cal.setTime(startDate);*/
 
