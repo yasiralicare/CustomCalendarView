@@ -1,6 +1,8 @@
 package com.yasirali.customcalendarview.fragment;
 
+import android.content.Intent;
 import android.content.res.AssetManager;
+import android.graphics.RectF;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ import com.google.gson.reflect.TypeToken;
 import com.yasirali.customcalendarview.R;
 import com.yasirali.customcalendarview.Utility;
 import com.yasirali.customcalendarview.model.Event;
+import com.yasirali.customcalendarview.ui.SingleDayViewActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -82,6 +85,15 @@ public class DayViewFragment extends Fragment {
         // month every time the month changes on the week view.
         mWeekView.setMonthChangeListener(mMonthChangeListener);
 
+        mWeekView.setOnEventClickListener(new WeekView.EventClickListener() {
+            @Override
+            public void onEventClick(WeekViewEvent weekViewEvent, RectF rectF) {
+                Calendar selectedDate = weekViewEvent.getStartTime();
+                Intent dayViewIntent = new Intent(getActivity(), SingleDayViewActivity.class);
+                dayViewIntent.putExtra("selectedDate", selectedDate);
+                startActivity(dayViewIntent);
+            }
+        });
 
 
 

@@ -1,7 +1,9 @@
 package com.yasirali.customcalendarview.fragment;
 
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -17,12 +19,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alamkanak.weekview.WeekView;
+import com.alamkanak.weekview.WeekViewEvent;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yasirali.customcalendarview.R;
 import com.yasirali.customcalendarview.Utility;
 import com.yasirali.customcalendarview.adapter.MonthViewAdapter;
 import com.yasirali.customcalendarview.model.Event;
+import com.yasirali.customcalendarview.ui.SingleDayViewActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +37,7 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -113,7 +119,23 @@ public class MonthViewFragment extends Fragment{
                 ((MonthViewAdapter) parent.getAdapter()).setSelected(v);
                 String selectedGridDate = MonthViewAdapter.dayString
                         .get(position);
-                String[] separatedTime = selectedGridDate.split("-");
+
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+                try {
+                    Date startDate = dateFormat.parse(selectedGridDate);
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(startDate);
+                    Intent dayViewIntent = new Intent(getActivity(), SingleDayViewActivity.class);
+                    dayViewIntent.putExtra("selectedDate", cal);
+                    startActivity(dayViewIntent);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+
+
+
+                /*String[] separatedTime = selectedGridDate.split("-");
                 String gridvalueString = separatedTime[2].replaceFirst("^0*",
                         "");// taking last part of date. ie; 2 from 2012-12-02.
                 int gridvalue = Integer.parseInt(gridvalueString);
@@ -136,11 +158,11 @@ public class MonthViewFragment extends Fragment{
                     }
                 }
 
-                /*for (int i = 0; i < Utility.startDates.size(); i++) {
+                *//*for (int i = 0; i < Utility.startDates.size(); i++) {
                     if (Utility.startDates.get(i).equals(selectedGridDate)) {
                         desc.add(Utility.nameOfEvent.get(i));
                     }
-                }*/
+                }*//*
 
                 if (desc.size() > 0) {
                     for (int i = 0; i < desc.size(); i++) {
@@ -155,7 +177,7 @@ public class MonthViewFragment extends Fragment{
 
                     }
 
-                }
+                }*/
 
                 desc = null;
 
