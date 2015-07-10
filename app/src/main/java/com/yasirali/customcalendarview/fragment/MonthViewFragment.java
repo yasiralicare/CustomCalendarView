@@ -2,13 +2,10 @@ package com.yasirali.customcalendarview.fragment;
 
 import android.content.Intent;
 import android.content.res.AssetManager;
-import android.graphics.Color;
-import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,15 +16,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alamkanak.weekview.WeekView;
-import com.alamkanak.weekview.WeekViewEvent;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yasirali.customcalendarview.R;
 import com.yasirali.customcalendarview.Utility;
 import com.yasirali.customcalendarview.adapter.MonthViewAdapter;
 import com.yasirali.customcalendarview.model.Event;
-import com.yasirali.customcalendarview.ui.SingleDayViewActivity;
+import com.yasirali.customcalendarview.SingleDayViewActivity;
 
 import java.io.IOException;
 import java.io.InputStream;

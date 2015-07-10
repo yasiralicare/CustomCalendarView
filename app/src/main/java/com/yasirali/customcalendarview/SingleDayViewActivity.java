@@ -1,7 +1,8 @@
-package com.yasirali.customcalendarview.ui;
+package com.yasirali.customcalendarview;
 
 import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.graphics.RectF;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +16,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yasirali.customcalendarview.R;
 import com.yasirali.customcalendarview.model.Event;
+import com.yasirali.customcalendarview.ui.EventDetailDialog;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -79,6 +81,14 @@ public class SingleDayViewActivity extends ActionBarActivity {
         mWeekView.setMonthChangeListener(mMonthChangeListener);
 
         mWeekView.goToDate(selectedDate);
+
+        mWeekView.setOnEventClickListener(new WeekView.EventClickListener() {
+            @Override
+            public void onEventClick(WeekViewEvent weekViewEvent, RectF rectF) {
+                EventDetailDialog dialog = new EventDetailDialog(SingleDayViewActivity.this, weekViewEvent);
+                dialog.show();
+            }
+        });
 
         // Set long press listener for events.
         //mWeekView.setEventLongPressListener(mEventLongPressListener);

@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.SingleDayViewActivity"
+            android:name=".SingleDayViewActivity"
             android:label="@string/title_activity_single_day_view" >
         </activity>
     </application>

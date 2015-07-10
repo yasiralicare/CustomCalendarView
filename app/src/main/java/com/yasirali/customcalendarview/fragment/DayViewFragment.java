@@ -3,7 +3,6 @@ package com.yasirali.customcalendarview.fragment;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.RectF;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,16 +19,14 @@ import com.alamkanak.weekview.WeekViewEvent;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yasirali.customcalendarview.R;
-import com.yasirali.customcalendarview.Utility;
 import com.yasirali.customcalendarview.model.Event;
-import com.yasirali.customcalendarview.ui.SingleDayViewActivity;
+import com.yasirali.customcalendarview.SingleDayViewActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -158,12 +155,12 @@ public class DayViewFragment extends Fragment {
                 Calendar endTime = Calendar.getInstance();
                 endTime.setTime(endDate);
 
-                WeekViewEvent event = new WeekViewEvent(1, ev.getText().trim(), startTime, endTime);
+                WeekViewEvent event = new WeekViewEvent(Integer.parseInt(ev.getId()), ev.getText().trim(), startTime, endTime);
                 event.setColor(getResources().getColor(R.color.event_color_02));
                 events.add(event);
 
 
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
