@@ -1,7 +1,8 @@
 package com.yasirali.customcalendarview.fragment;
 
+import android.content.Intent;
 import android.content.res.AssetManager;
-import android.os.Handler;
+import android.graphics.RectF;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,15 +19,14 @@ import com.alamkanak.weekview.WeekViewEvent;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yasirali.customcalendarview.R;
-import com.yasirali.customcalendarview.Utility;
 import com.yasirali.customcalendarview.model.Event;
+import com.yasirali.customcalendarview.SingleDayViewActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -82,6 +82,15 @@ public class DayViewFragment extends Fragment {
         // month every time the month changes on the week view.
         mWeekView.setMonthChangeListener(mMonthChangeListener);
 
+        mWeekView.setOnEventClickListener(new WeekView.EventClickListener() {
+            @Override
+            public void onEventClick(WeekViewEvent weekViewEvent, RectF rectF) {
+                Calendar selectedDate = weekViewEvent.getStartTime();
+                Intent dayViewIntent = new Intent(getActivity(), SingleDayViewActivity.class);
+                dayViewIntent.putExtra("selectedDate", selectedDate);
+                startActivity(dayViewIntent);
+            }
+        });
 
 
 
@@ -117,9 +126,9 @@ public class DayViewFragment extends Fragment {
             // Populate the week view with some events.
             //List<WeekViewEvent> events = Utility.getCalendarEvents(getActivity(), newYear, newMonth);
 
-            List<WeekViewEvent> events = generateEventsFromJson(newYear, newMonth);
+            //List<WeekViewEvent> events = generateEventsFromJson(newYear, newMonth);
 
-            //generateDummyEvents(newYear, newMonth, events);
+            List<WeekViewEvent> events = generateDummyEvents(newYear, newMonth);
 
             return events;
         }
@@ -146,12 +155,12 @@ public class DayViewFragment extends Fragment {
                 Calendar endTime = Calendar.getInstance();
                 endTime.setTime(endDate);
 
-                WeekViewEvent event = new WeekViewEvent(1, ev.getText().trim(), startTime, endTime);
+                WeekViewEvent event = new WeekViewEvent(Integer.parseInt(ev.getId()), ev.getText().trim(), startTime, endTime);
                 event.setColor(getResources().getColor(R.color.event_color_02));
                 events.add(event);
 
 
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
@@ -160,7 +169,9 @@ public class DayViewFragment extends Fragment {
         return events;
     }
 
-    private void generateDummyEvents(int newYear, int newMonth, List<WeekViewEvent> events) {
+    private List<WeekViewEvent> generateDummyEvents(int newYear, int newMonth) {
+
+        List<WeekViewEvent> events = new ArrayList<>();
 
         Calendar startTime = Calendar.getInstance();
         startTime.set(Calendar.HOUR_OF_DAY, 3);
@@ -259,6 +270,8 @@ public class DayViewFragment extends Fragment {
         event = new WeekViewEvent(5, getEventTitle(startTime), startTime, endTime);
         event.setColor(getResources().getColor(R.color.event_color_02));
         events.add(event);
+
+        return  events;
     }
 
 
