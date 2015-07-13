@@ -126,9 +126,9 @@ public class DayViewFragment extends Fragment {
             // Populate the week view with some events.
             //List<WeekViewEvent> events = Utility.getCalendarEvents(getActivity(), newYear, newMonth);
 
-            List<WeekViewEvent> events = generateEventsFromJson(newYear, newMonth);
+            //List<WeekViewEvent> events = generateEventsFromJson(newYear, newMonth);
 
-            //generateDummyEvents(newYear, newMonth, events);
+            List<WeekViewEvent> events = generateDummyEvents(newYear, newMonth);
 
             return events;
         }
@@ -169,7 +169,9 @@ public class DayViewFragment extends Fragment {
         return events;
     }
 
-    private void generateDummyEvents(int newYear, int newMonth, List<WeekViewEvent> events) {
+    private List<WeekViewEvent> generateDummyEvents(int newYear, int newMonth) {
+
+        List<WeekViewEvent> events = new ArrayList<>();
 
         Calendar startTime = Calendar.getInstance();
         startTime.set(Calendar.HOUR_OF_DAY, 3);
@@ -268,6 +270,8 @@ public class DayViewFragment extends Fragment {
         event = new WeekViewEvent(5, getEventTitle(startTime), startTime, endTime);
         event.setColor(getResources().getColor(R.color.event_color_02));
         events.add(event);
+
+        return  events;
     }
 
 

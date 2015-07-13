@@ -48,7 +48,7 @@
         android:background="@android:color/holo_blue_dark"/>
 
     <include android:id="@+id/eventDetailItem1" layout="@layout/event_detail_item" />
-    <include android:id="@+id/eventDetailItem2" layout="@layout/event_detail_item" />
+    <!-- <include android:id="@+id/eventDetailItem2" layout="@layout/event_detail_item" /> -->
     <include android:id="@+id/eventDetailItem3" layout="@layout/event_detail_item" />
 
 
