@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.media.Image;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.alamkanak.weekview.WeekViewEvent;
 import com.yasirali.customcalendarview.R;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
@@ -61,6 +63,12 @@ public class EventDetailDialog extends Dialog {
 
         ((TextView)eventDetailItem1.findViewById(R.id.textView2)).setText(combinedTime);
 
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEE, MMMM dd");
+        String d = sdf.format(mWeekViewEvent.getStartTime().getTime());
+        ((TextView)eventDetailItem1.findViewById(R.id.textView1)).setText(d);
+
+        ((TextView)eventDetailItem3.findViewById(R.id.textView1)).setText("Events");
+        ((TextView)eventDetailItem3.findViewById(R.id.textView2)).setVisibility(View.GONE);
 
 
     }
