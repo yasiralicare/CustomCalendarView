@@ -126,9 +126,9 @@ public class DayViewFragment extends Fragment {
             // Populate the week view with some events.
             //List<WeekViewEvent> events = Utility.getCalendarEvents(getActivity(), newYear, newMonth);
 
-            //List<WeekViewEvent> events = generateEventsFromJson(newYear, newMonth);
+            List<WeekViewEvent> events = generateEventsFromJson(newYear, newMonth);
 
-            List<WeekViewEvent> events = generateDummyEvents(newYear, newMonth);
+            //List<WeekViewEvent> events = generateDummyEvents(newYear, newMonth);
 
             return events;
         }
